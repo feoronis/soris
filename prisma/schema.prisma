@@ -1,0 +1,23 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String    @id @default(uuid()) // Уникальный ID пользователя
+  records  Record[]  // Связь: один пользователь — много записей
+  totalCount Int      @default(0)
+}
+
+model Record {
+  id        String  @id @default(uuid()) // Уникальный ID записи
+  userId    String  // ID пользователя (внешний ключ)
+  date      DateTime // Дата записи
+  countPuffs Int     // Количество "puffs"
+  
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

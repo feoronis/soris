@@ -1,0 +1,20 @@
+.container{
+    padding: 0 1.4rem;
+    padding-bottom: 2.2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    gap: 1rem;
+}
+.text {
+    text-align: center;
+    font-weight: 300;
+    font-size: var(--s16);
+}
+.description {
+    color: var(--light-gray);
+}
+.developers {
+    color: var(--gray);
+}

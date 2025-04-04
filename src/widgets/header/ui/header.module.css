@@ -1,0 +1,46 @@
+.container {
+    padding: 1.5rem 3rem;
+
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+}
+.logo {
+    font-size: var(--s32);
+    font-weight: 700;
+    letter-spacing: 0.05rem;
+}
+.navBar {
+    display: flex;
+    align-items: center;
+}
+
+.mobileNav {
+    display: none;
+}
+
+.fullNav {
+    display: flex;
+    gap: 2rem;
+
+    padding-right: 2rem;
+}
+
+.navElem {
+    font-weight: 400;
+    letter-spacing: 0.06rem;
+}
+
+
+@media (max-width: 1000px){
+    .mobileNav {
+        display: block;
+    }
+    .fullNav {
+        display: none;
+    }
+
+    .container {
+        padding: 1rem 1.8rem;
+    }
+}

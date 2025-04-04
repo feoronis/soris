@@ -1,0 +1,44 @@
+.containerPage {
+    min-height: 90vh;
+    padding: 4rem 6.25rem;
+
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: 1fr 1fr;
+
+    justify-items: stretch;
+    align-items: stretch;
+
+    gap: 2.9rem;
+}
+
+.containerPage > .containerElem:last-child {
+    grid-column: 1; /* Занимает первую колонку */
+    grid-row: 1 / span 2; /* Растягивается на две строки */
+    min-height: 0;
+}
+
+.containerPage > .containerElem:not(:last-child) {
+    grid-column: 2; /* Вторая колонка */
+    min-height: 0;
+}
+
+.containerElem {
+    display: flex;
+}
+.containerElem > * {
+    flex-grow: 1;
+    width: 100%;
+}
+
+@media (max-width: 1000px){
+    .containerPage {
+        min-height: 90vh;
+        padding: 2rem 1rem;
+        padding-bottom: 4rem;
+    
+        display: flex;
+        flex-direction: column;
+        gap: 2.9rem;
+    }
+}

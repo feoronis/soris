@@ -1,0 +1,51 @@
+.container {
+    background-color: var(--blue);
+    opacity: 0.7;
+
+    border-radius: 1.2rem;
+    border: 1px solid var(--violete);
+
+    padding: 1.2rem 1.5rem 1.6rem 1.5rem;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.625rem;
+}
+
+.heading {
+    text-align: center;
+    margin-bottom: 0.7rem;
+
+    font-size: var(--s24);
+    font-weight: 600;
+
+    letter-spacing: 0.06rem;
+}
+
+.input {
+    padding: 0.4rem 0.85rem;
+    background-color: var(--light-blue);
+    border-radius: 0.5rem;
+
+    font-size: var(--s16);
+    font-weight: 400;
+
+    width: 100%;
+}
+
+.separator {
+    color: var(--pale-blue);
+}
+
+.btnSave {
+    padding: 0.4rem 0.85rem;
+    margin-top: 1rem;
+    background-color: var(--pale-violete);
+    width: 100%;
+    border-radius: 0.5rem;
+
+    font-size: var(--s16);
+    font-weight: 400;
+}
+
