@@ -5,24 +5,47 @@ import { Line } from 'react-chartjs-2';
 import 'chartjs-adapter-date-fns';
 import { getUserData, UserDataResponse } from '@/shared/api/endpoints/getRecords';
 
+import { useAppDispatch, useUserData, useUserLoading } from '@/store/hooks';
+import { setUserData, setLoading, UserData } from '@/store/slices/userSlice';
+
+import { useSession } from 'next-auth/react';
+
 ChartJS.register(LinearScale, CategoryScale, PointElement, LineElement, Tooltip, TimeScale);
 
 export function ChartBlock() {
     const [data, setData] = useState<UserDataResponse | null>(null);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await getUserData({ userId: 'ba92ac48-e883-416c-a25c-deb85d351b0a' });
-                setData(response);
-            } catch (err) {
-                console.error(err);
-            }
-        };
-        fetchData();
-    }, []);
+    const dispatch = useAppDispatch();
+    const userData = useUserData();
+    const loading = useUserLoading();
 
-    if (!data?.data || data.data.records.length === 0) {
+    const {data: session, status} = useSession();
+
+    useEffect(() => {
+        if (status === 'authenticated') {
+            const userId = session?.user?.id;
+            console.log('Fetched session:', session);
+
+            if (!userData) {
+                const fetchUserData = async () => {
+                    try {
+                        dispatch(setLoading(true));
+                        const response = await getUserData({userId});
+                        if (response.data) {
+                            dispatch(setUserData(response.data));
+                        }
+                    } catch(err) {
+                        console.error('Error fetching user data:', err);
+                    } finally {
+                        dispatch(setLoading(false));
+                    }
+                };
+                fetchUserData();
+            }
+        }
+    }, [session, status]);
+
+    if (!userData || userData.records.length === 0) {
         return (
             <div className={styles.container}>
                 <div className={styles.containerDataIsEmpty}>
@@ -41,11 +64,11 @@ export function ChartBlock() {
     }
 
     const chartData = {
-        labels: data.data.records.map(record => record.date),
+        labels: userData.records.map(record => record.date),
         datasets: [
             {
                 label: 'Затяжки',
-                data: data.data.records.map(record => record.countPuffs),
+                data: userData.records.map(record => record.countPuffs),
                 borderColor: '#2DCBC2',
                 backgroundColor: 'rgba(45, 203, 194, 0.1)',
                 tension: 0.4,
@@ -114,48 +137,16 @@ export function ChartBlock() {
                 <div className={styles.elemStat}>
                     <p className={styles.statHed}>Максимум</p>
                     <p className={styles.statNum}>
-                        {Math.max(...data.data.records.map(r => r.countPuffs))}
+                        {Math.max(...userData.records.map(r => r.countPuffs))}
                     </p>
                 </div>
                 <div className={styles.elemStat}>
                     <p className={styles.statHed}>Минимум</p>
                     <p className={styles.statNum}>
-                        {Math.min(...data.data.records.map(r => r.countPuffs))}
+                        {Math.min(...userData.records.map(r => r.countPuffs))}
                     </p>
                 </div>
             </div>
         </div>
     );
 }
-
-
-
-
-
-
-
-
-
-/*
-import Image from 'next/image';
-
-export function ChartBlock () {
-    return (
-        <div className={styles.container}>  
-
-            <div className={styles.contanerDataIsEmpty}>
-                <Image
-                        src={'/arrowsDown.svg'}
-                        alt='Стрелки вниз'
-                        className={styles.arrowsDown}
-                        width={50}
-                        height={50}
-                />
-
-                <p className={styles.textEmptyData}>Начните отслеживание</p>
-            </div>
-
-        </div>
-    )
-}
-    */

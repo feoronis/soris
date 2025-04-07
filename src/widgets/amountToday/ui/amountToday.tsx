@@ -4,6 +4,8 @@ import { addRecord } from '@/shared/api/endpoints/addRecord';
 import { useAppDispatch, useUserData, useUserLoading } from '@/store/hooks';
 import { setUserData, setLoading } from '@/store/slices/userSlice';
 
+import { useSession } from 'next-auth/react';
+
 export function AmountToday () {
     const [countPuffs, setCountPuffs] = useState('');
     const [totalCount, setTotalCount] = useState('');
@@ -12,8 +14,16 @@ export function AmountToday () {
     const userData = useUserData();
     const loading = useUserLoading();
 
+    const {data: session} = useSession();
+
     const handleSubmit = async () => {
-        const userId = 'ba92ac48-e883-416c-a25c-deb85d351b0a';
+        const userId = session?.user?.id;
+        console.log('session from amount today:', session);
+
+        if (!userId) {
+          console.error('user is not authenticated');
+          return;
+        }
 
         if (countPuffs !== '' || totalCount !== '') {
             try {

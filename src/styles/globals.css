@@ -97,11 +97,21 @@ legend {
 
 html {
     font-size: 24px;
+    background-color: var(--dark-blue);
+    color: var(--white);
 }
-  
-html{
-  background-color: var(--dark-blue);
-  color: var(--white);
+
+.layout-container {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    min-height: 100vh;
+}
+
+@media (max-width: 1000px) {
+    .layout-container {
+        display: block;
+        min-height: 100vh;
+    }
 }
 
 @media (max-width: 4000px) {

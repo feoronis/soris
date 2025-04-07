@@ -10,12 +10,21 @@ export interface UserDataResponse {
   status: 'success' | 'error';
   data?: {
     id: string;
+    login: string;
+    maxCounter: number;
     totalCount: number;
+    createdAt: string;
     records: Array<{
       id: string;
       date: string;
       countPuffs: number;
     }>;
+    session?: {
+      id: string;
+      token: string;
+      expires: string;
+      createdAt: string;
+    };
   };
   message?: string;
 }
@@ -23,7 +32,7 @@ export interface UserDataResponse {
 // Функция для получения данных пользователя
 export const getUserData = async ({ userId }: GetUserDataParams): Promise<UserDataResponse> => {
   try {
-    console.log('Запрос данных пользователя в api/endpoints/getUserData');
+    console.log('Запрос данных пользователя в api/endpoints/getUserData', userId);
     
     const response = await apiClient.get('/api/getRecords', {
       params: { userId }

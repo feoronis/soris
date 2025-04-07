@@ -1,32 +1,49 @@
 import styles from './generalStatics.module.css';
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 
-import { getUserData, UserDataResponse } from '@/shared/api/endpoints/getRecords';
+import { getUserData } from '@/shared/api/endpoints/getRecords';
 import { getAverageNumberWeek, getSumWeek, getDaysRecord, getDynamicsLastWeek } from '@/shared/getStatistic';
-import { useUserData, useUserLoading } from '@/store/hooks';
+import { useAppDispatch, useUserData, useUserLoading } from '@/store/hooks';
+import { setUserData, setLoading, UserData } from '@/store/slices/userSlice';
+
+import { useSession } from 'next-auth/react';
 
 export function GeneralStatics () {
-    const [data, setData] = useState<UserDataResponse | null>(null);
+
+    const dispatch = useAppDispatch();
     const userData = useUserData();
     const loading = useUserLoading();
 
+    const {data: session, status} = useSession();
+
     useEffect(() => {
-        const fetchUserData = async () => {
-            try {
-                const response = await getUserData({userId: 'ba92ac48-e883-416c-a25c-deb85d351b0a'});
-                setData(response);
-            } catch(err) {
-                console.log(err);
+        if (status === 'authenticated') {
+            const userId = session?.user?.id;
+            console.log('Fetched session:', session);
+
+            if (!userData) {
+                const fetchUserData = async () => {
+                    try {
+                        dispatch(setLoading(true));
+                        const response = await getUserData({userId});
+                        if (response.data) {
+                            dispatch(setUserData(response.data));
+                        }
+                    } catch(err) {
+                        console.error('Error fetching user data:', err);
+                    } finally {
+                        dispatch(setLoading(false));
+                    }
+                };
+                fetchUserData();
             }
-
-        };
-        fetchUserData();
-    }, [])
+        }
+    }, [session, status]);
 
 
 
-    if (!data?.data || data?.data.records.length == 0) {
+    if (!userData) {
         return (
             <div className={styles.container}>  
                 <div className={styles.contanerDataIsEmpty}>
@@ -52,35 +69,35 @@ export function GeneralStatics () {
             
                 <div className={styles.elemStat}>
                     <p className={styles.statHed}>Сегодня</p>
-                    <p className={styles.statNum}>{data.data.records.length > 0 ? data.data.records[data.data.records.length - 1].countPuffs : 0}</p>
+                    <p className={styles.statNum}>{userData.records.length > 0 ? userData.records[0].countPuffs : 0}</p>
                 </div>
 
                 <div className={styles.elemStat}>
                     <p className={styles.statHed}>Среднее кол-во</p>
-                    <p className={styles.statNum}>{getAverageNumberWeek(data.data)}</p>
+                    <p className={styles.statNum}>{getAverageNumberWeek(userData)}</p>
                 </div>
 
                 <div className={styles.elemStat}>
                     <p className={styles.statHed}>За неделю</p>
-                    <p className={styles.statNum}>{getSumWeek(data.data)}</p>
+                    <p className={styles.statNum}>{getSumWeek(userData)}</p>
                 </div>
                 
-                {data && dynamicBlockStat(data)}
+                {userData && dynamicBlockStat(userData)}
 
                 <div className={styles.elemStat}>
                     <p className={styles.statHed}>Всего дней</p>
-                    <p className={styles.statNum}>{getDaysRecord(data.data)}</p>
+                    <p className={styles.statNum}>{getDaysRecord(userData)}</p>
                 </div>
             </div>
         </div>
     );
 }
 
-function dynamicBlockStat (data:UserDataResponse) {
-    if (!data.data) {
+function dynamicBlockStat (data:UserData) {
+    if (!data) {
         return;
     }
-    let dynamic = getDynamicsLastWeek(data.data);
+    let dynamic = getDynamicsLastWeek(data);
 
     if (dynamic < 0) {
         return (

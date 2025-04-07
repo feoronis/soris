@@ -24,6 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
         // Получаем userId из query-параметров
         const { userId } = req.query;
+        console.log('user id from get records', userId);
 
         // Валидация параметра
         if (!userId || typeof userId !== 'string') {
